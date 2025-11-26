@@ -322,3 +322,108 @@ Les deux utilisent **les mêmes .proto**,
 
 ------
 
+
+
+
+
+# WebRTC : C’est quoi ?
+
+WebRTC (**Web Real-Time Communication**) est une technologie qui permet à deux navigateurs (ou deux applications) de communiquer **en temps réel**, directement **en pair-à-pair (P2P)** :
+
+- audio
+- vidéo
+- données (DataChannel)
+
+Sans avoir besoin d’un serveur pour transporter le flux.
+
+# Ce que WebRTC permet
+
+- Appels vidéo/audio (comme Discord, Meet, WhatsApp Web)
+- Transfert de fichiers P2P
+- Jeux en temps réel
+- Communication ultra faible latence entre navigateurs
+
+WebRTC est littéralement :
+ **du P2P en temps réel, intégré nativement dans les navigateurs.**
+
+------
+
+# Mais ce n’est pas magique : WebRTC a besoin de serveurs
+
+Même si WebRTC communique *ensuite* en P2P, il faut d’abord :
+
+### 1. **Signaling server**
+
+Permet aux deux pairs d’échanger leurs informations de connexion.
+ Exemples : WebSocket, gRPC-Web, HTTP… peu importe.
+
+### 2. **STUN server**
+
+Pour découvrir votre adresse publique (NAT traversal).
+
+### 3. **TURN server** *(fallback important)*
+
+Quand le P2P direct est impossible (NAT strict), TURN relaye le trafic.
+
+Donc :
+
+- WebRTC = P2P
+- Mais signaling = obligatoire sur un serveur
+- Et TURN = souvent nécessaire
+
+------
+
+# Quels types de flux WebRTC transporte ?
+
+Trois canaux principaux :
+
+### 1. **MediaStream** (audio/vidéo)
+
+Ultra optimisé pour la latence, codecs intégrés, crypto obligatoire.
+
+### 2. **RTCPeerConnection**
+
+Gestion réseau P2P + ICE + STUN + TURN.
+
+### 3. **RTCDataChannel**
+
+Canal de données fiable ou non fi able, très rapide.
+ Comparable à un **UDP fiable** ou **TCP sans surplomb**.
+
+C’est un excellent choix pour la signalisation en temps réel.
+
+------
+
+# WebRTC vs gRPC vs gRPC-Web
+
+Voici un tableau très clair :
+
+| Technologie  | P2P ? | Navigateur ? | Latence      | Use-case principal           |
+| ------------ | ----- | ------------ | ------------ | ---------------------------- |
+| **gRPC**     | Non   | Non          | Très faible  | Microservices backend        |
+| **gRPC-Web** | Non   | Oui          | Faible       | Appels API depuis un browser |
+| **WebRTC**   | Oui   | Oui          | Ultra faible | Audio/vidéo/temps réel/P2P   |
+
+**Conclusion :**
+ WebRTC n’est *pas* un protocole RPC.
+ C’est un protocole **temps réel**, **P2P**, pour multimédia + data.
+
+------
+
+# Avantages WebRTC
+
+- Ultra faible latence
+- P2P → pas de serveur de transport
+- Chiffrement obligatoire
+- Très efficace pour audio/vidéo
+- DataChannel très rapide
+
+# Inconvénients
+
+- Beaucoup plus complexe que gRPC
+- Besoin de serveurs STUN/TURN + signaling
+- NAT traversal parfois pénible
+- Pas idéal pour des API classiques
+
+------
+
